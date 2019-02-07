@@ -7,19 +7,21 @@
                 this.nb_y = 0;
                 this.player = 'red';
 
-                $("body").append("<br><input id='x'><input id='y'><button type='submit' id='go'>go</button>");
-                $("body").append("<br><p>created by yassine</p>");
+                $("body").append("<br><div class='btn'><input id='x'><input id='y'><button type='submit' id='go'>go</button></div>");
                 $("body").append("<div id=\"back\"></div>");
                 $("body").append("<div id=\"front\"></div>");
-                $('#go').click(this.createGrid.bind(this));
+                $("body").append("<button id='restart' style='visibility: hidden'>replay</button>");
+                $("body").append("<br><p class='yassine'>created by yassine</p>");
+
+                $('#go').click(this.grille.bind(this));
 
             }
 
-            createGrid() {
+            grille() {
                 $('#puissance4').remove();
 
                 $("body").prepend("<div id='puissance4'></div>");
-                $("body").prepend("<h4><span id='player'>Joueur RED a vous !!</span></h4>");
+                $("body").prepend("<h4 class='play'><span id='player'>Joueur RED a vous !!</span></h4>");
                 const $board = $(this.selector);
                 this.nb_x = $('#x').val();
                 this.nb_y = $('#y').val();
@@ -72,7 +74,6 @@
                 });
 
                 $board.on('click', '.col.empty', function () {
-                    this.turn++;
 
                     if (that.isGameOver) return;
                     const col = $(this).data('col');
@@ -96,17 +97,18 @@
                         let son1 = new Audio('GO.mp3');
                         son1.play();
                         $('.col.empty').removeClass('empty');
+                        $('#restart').css('visibility','visible');
+                        $('#puissance4').css('pointer-events','none');
                         return;
                     }
 
-                    that.player = (that.player === 'red') ? 'black' : 'red';
+                    that.player = (that.player === 'red') ? 'yellow' : 'red';
                     $('#player').text("joueur " + that.player.toUpperCase() + " a vous !!");
 
                     $(this).trigger('mouseenter');
 
                 });
             }
-
             checkForWinner(row, col) {
                 const that = this;
 
@@ -119,12 +121,7 @@
                     let i = row + direction.i;
                     let j = col + direction.j;
                     let $next = $getCell(i, j);
-                    while (i >= 0 &&
-                        i < that.nb_x &&
-                        j >= 0 &&
-                        j < that.nb_y &&
-                        $next.data('player') === that.player
-                        ) {
+                    while (i >= 0 && i < that.nb_x && j >= 0 && j < that.nb_y && $next.data('player') === that.player) {
                         total++;
                         i += direction.i;
                         j += direction.j;
@@ -134,10 +131,10 @@
                     return total;
                 }
 
-                function checkWin(directionA, directionB) {
+                function verifWin(x, y) {
                     const total = 1 +
-                        checkDirection(directionA) +
-                        checkDirection(directionB);
+                        checkDirection(x) +
+                        checkDirection(y);
                     if (total >= 4) {
                         return that.player;
                     } else {
@@ -145,28 +142,36 @@
                     }
                 }
 
-                function checkDiago1() {
-                    return checkWin({i: 1, j: -1}, {i: 1, j: 1});
+                function diago1() {
+                    return verifWin({i: 1, j: -1}, {i: 1, j: 1});
                 }
 
-                function checkDiago2() {
-                    return checkWin({i: 1, j: 1}, {i: -1, j: -1});
+                function diago2() {
+                    return verifWin({i: 1, j: 1}, {i: -1, j: -1});
                 }
 
-                function checkVerti() {
-                    return checkWin({i: -1, j: 0}, {i: 1, j: 0});
+                function verti() {
+                    return verifWin({i: -1, j: 0}, {i: 1, j: 0});
                 }
 
-                function checkHori() {
-                    return checkWin({i: 0, j: -1}, {i: 0, j: 1});
+                function hori() {
+                    return verifWin({i: 0, j: -1}, {i: 0, j: 1});
                 }
 
-                return checkVerti() || checkHori() || checkDiago1() || checkDiago2();
+                return verti() || hori() || diago1() || diago2();
             }
         }
 
         $(document).ready(function () {
             const puissance4 = new Puissance4('#puissance4');
+            $('#restart').on('click',function () {
+                $('#puissance4').empty();
+                $('#puissance4').css('pointer-events','');
+                $('.play').remove();
+                puissance4.grille();
+                $('#restart').css('visibility','hidden')
+
+            })
         });
     }
 })(jQuery);
