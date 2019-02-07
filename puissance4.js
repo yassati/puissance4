@@ -8,6 +8,9 @@
                 this.player = 'red';
 
                 $("body").append("<br><input id='x'><input id='y'><button type='submit' id='go'>go</button>");
+                $("body").append("<br><p>created by yassine</p>");
+                $("body").append("<div id=\"back\"></div>");
+                $("body").append("<div id=\"front\"></div>");
                 $('#go').click(this.createGrid.bind(this));
 
             }
@@ -98,7 +101,7 @@
 
                     that.player = (that.player === 'red') ? 'black' : 'red';
                     $('#player').text("joueur " + that.player.toUpperCase() + " a vous !!");
-                    
+
                     $(this).trigger('mouseenter');
 
                 });
