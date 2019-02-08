@@ -6,14 +6,19 @@
                 this.nb_x = 0;
                 this.nb_y = 0;
                 this.player = 'red';
+                this.score1=0;
+                this.score2=0;
 
-                $("body").append("<br><div class='btn'><input id='x'><input id='y'><button type='submit' id='go'>go</button></div>");
+                $("header").append("<h1 id='titre'>PUISSANCE 4</h1>");
+
+                $("body").append("<br><div class='btn'><input id='x' value='6'><input value='7' id='y'><button type='submit' id='go'>go</button></div>");
                 $("body").append("<div id=\"back\"></div>");
                 $("body").append("<div id=\"front\"></div>");
                 $("body").append("<button id='restart' style='visibility: hidden'>replay</button>");
                 $("body").append("<br><p class='yassine'>created by yassine</p>");
-
                 $('#go').click(this.grille.bind(this));
+                $('#go').click(function () {
+                });
 
             }
 
@@ -21,11 +26,13 @@
                 $('#puissance4').remove();
 
                 $("body").prepend("<div id='puissance4'></div>");
+                $("body").prepend("<h6 class='ml6' id='win'></h6>");
                 $("body").prepend("<h4 class='play'><span id='player'>Joueur RED a vous !!</span></h4>");
-                const $board = $(this.selector);
+                $("body").prepend("<div class='result'> <div class='countRed'>0</div> <div class='countYellow'>0</div></div>");
+                const grille = $(this.selector);
                 this.nb_x = $('#x').val();
                 this.nb_y = $('#y').val();
-                if (this.nb_x > 3 && this.nb_y > 3) {
+                if (this.nb_x > 3 && this.nb_y > 3 && this.nb_x < 15 && this.nb_y < 15) {
                     for (let row = 0; row < this.nb_x; row++) {
                         const $row = $('<div>')
                             .addClass('row');
@@ -36,22 +43,29 @@
                                 .attr('data-row', row);
                             $row.append($col);
                         }
-                        $board.append($row);
+                        grille.append($row);
                     }
 
-                    this.setupEventListeners();
-                    this.isGameOver = false;
-                } else {
-                    alert("IL FAUT MINIMUM 4 CASES !!");
+                    this.placerPions();
+                    this.victoire = false;
+                    $('.btn').css('visibility','hidden');
+                    $('header').remove()
+                }
+                else {
+                    alert("IL FAUT MINIMUM 4 CASES ET MAXIMUM 15 !!");
+                    $('.result').css('visibility','hidden');
+                    $('.play').css('visibility','hidden');
+
+
                 }
             }
 
-            setupEventListeners() {
-                this.isGameOver = false;
-                const $board = $(this.selector);
+            placerPions() {
+                this.victoire = false;
+                const grille = $(this.selector);
                 const that = this;
 
-                function findLastEmptyCell(col) {
+                function recupLastEmpty(col) {
                     const cells = $(`.col[data-col='${col}']`);
                     for (let i = cells.length - 1; i >= 0; i--) {
                         const $cell = $(cells[i]);
@@ -62,61 +76,91 @@
                     return null;
                 }
 
-                $board.on('mouseenter', '.col.empty', function () {
-                    if (that.isGameOver) return;
+                grille.on('mouseenter', '.col.empty', function () {
+                    if (that.victoire) return;
                     const col = $(this).data('col');
-                    const $lastEmptyCell = findLastEmptyCell(col);
-                    $lastEmptyCell.addClass(`next-${that.player}`);
+                    const dernierVide = recupLastEmpty(col);
+                    dernierVide.addClass(`next-${that.player}`);
                 });
 
-                $board.on('mouseleave', '.col', function () {
+                grille.on('mouseleave', '.col', function () {
                     $('.col').removeClass(`next-${that.player}`);
                 });
 
-                $board.on('click', '.col.empty', function () {
+                grille.on('click', '.col.empty', function () {
 
-                    if (that.isGameOver) return;
+                    if (that.victoire) return;
                     const col = $(this).data('col');
-                    const $lastEmptyCell = findLastEmptyCell(col);
-                    $lastEmptyCell.removeClass(`empty next-${that.player}`);
-                    $lastEmptyCell.addClass(that.player);
-                    $lastEmptyCell.data('player', that.player);
+                    const dernierVide = recupLastEmpty(col);
+                    dernierVide.removeClass(`empty next-${that.player}`);
+                    dernierVide.addClass(that.player);
+                    dernierVide.data('player', that.player);
                     let son = new Audio('comlo.mp3');
                     son.play();
                     const clr = that.player;
 
-                    const winner = that.checkForWinner(
-                        $lastEmptyCell.data('row'),
-                        $lastEmptyCell.data('col')
+                    const winner = that.verifVictoire(
+                        dernierVide.data('row'),
+                        dernierVide.data('col')
                     );
 
                     if (winner) {
+
                         const that = this;
-                        that.isGameOver = true;
-                        $board.prepend('GAME OVER !! ' + clr.toUpperCase() + ' A GAGNE ... ');
+                        that.victoire = true;
+                        $('#win').text('GAME OVER !! ' + clr.toUpperCase() + ' A GAGNE ... ');
                         let son1 = new Audio('GO.mp3');
                         son1.play();
                         $('.col.empty').removeClass('empty');
                         $('#restart').css('visibility','visible');
                         $('#puissance4').css('pointer-events','none');
+                        if(that.victoire===this.player){
+                            this.score1++;
+                            console.log(this.score1)
+                        }
+                        else {
+                            this.score2++;
+                        }
                         return;
                     }
 
                     that.player = (that.player === 'red') ? 'yellow' : 'red';
                     $('#player').text("joueur " + that.player.toUpperCase() + " a vous !!");
 
+
                     $(this).trigger('mouseenter');
+
+                    $('.ml6 .letters').each(function(){
+                        $(this).html($(this).text().replace(/([^\x00-\x80]|\w)/g, "<span class='letter'>$&</span>"));
+                    });
+
+                    anime.timeline({loop: true})
+                        .add({
+                            targets: '.ml6 .letter',
+                            translateY: ["1.1em", 0],
+                            translateZ: 0,
+                            duration: 750,
+                            delay: function(el, i) {
+                                return 50 * i;
+                            }
+                        }).add({
+                        targets: '.ml6',
+                        opacity: 0,
+                        duration: 1000,
+                        easing: "easeOutExpo",
+                        delay: 1000
+                    });
 
                 });
             }
-            checkForWinner(row, col) {
+            verifVictoire(row, col) {
                 const that = this;
 
                 function $getCell(i, j) {
                     return $(`.col[data-row='${i}'][data-col='${j}']`);
                 }
 
-                function checkDirection(direction) {
+                function verifDirection(direction) {
                     let total = 0;
                     let i = row + direction.i;
                     let j = col + direction.j;
@@ -133,8 +177,8 @@
 
                 function verifWin(x, y) {
                     const total = 1 +
-                        checkDirection(x) +
-                        checkDirection(y);
+                        verifDirection(x) +
+                        verifDirection(y);
                     if (total >= 4) {
                         return that.player;
                     } else {
@@ -168,8 +212,10 @@
                 $('#puissance4').empty();
                 $('#puissance4').css('pointer-events','');
                 $('.play').remove();
+                $('.ml6').remove();
+                $('.result').remove();
                 puissance4.grille();
-                $('#restart').css('visibility','hidden')
+                $('#restart').css('visibility','hidden');
 
             })
         });

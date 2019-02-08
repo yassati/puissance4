@@ -4,7 +4,7 @@
 }
 body {
     text-align: center;
-    padding-top: 100px;
+    /*padding-top: 100px;*/
     background-color: #05182d;
     color: white;
 }
@@ -150,8 +150,61 @@ body {
     padding-top: 70px;
 }
 .play{
-    padding-bottom: 50px;
+    padding-bottom: 30px;
 }
 .btn{
     padding-top: 30px;
+}
+#win{
+    padding-bottom: 30px;
+}
+
+.ml6 {
+    position: relative;
+    font-weight: 500;
+    font-size: 2.5em;
+}
+
+.ml6 .text-wrapper {
+    position: relative;
+    display: inline-block;
+    padding-top: 0.2em;
+    padding-right: 0.05em;
+    padding-bottom: 0.1em;
+    overflow: hidden;
+}
+
+
+.ml6 .letter {
+    display: inline-block;
+    line-height: 1em;
+}
+button{
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 1rem;
+    color: #fff;
+    background-color: rgba(29, 137, 245, 0.5);
+    border-color: #007bff;
+    border-radius: 10px;
+    width: auto;
+    height: auto;
+    padding: 10px 30px;
+    margin-left: 20px;
+
+}
+input{
+    width: 100px;
+    height: 30px;
+    margin-right: 8px;
+
+}
+header{
+    color: white;
+    height: 50px;
+    background-color: rgba(214,214,213,0.3);
+    padding: 20px;
+    border-bottom: 2px solid white;
 }
