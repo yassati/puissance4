@@ -6,16 +6,13 @@
                 this.nb_x = 0;
                 this.nb_y = 0;
                 this.player = 'red';
-                this.score1=0;
-                this.score2=0;
 
                 $("header").append("<h1 id='titre'>PUISSANCE 4</h1>");
-
                 $("body").append("<br><div class='btn'><input id='x' value='6'><input value='7' id='y'><button type='submit' id='go'>go</button></div>");
                 $("body").append("<div id=\"back\"></div>");
                 $("body").append("<div id=\"front\"></div>");
                 $("body").append("<button id='restart' style='visibility: hidden'>replay</button>");
-                $("body").append("<br><p class='yassine'>created by yassine</p>");
+                $("body").append("<br><p class='yassine'>Copyright © 2019 Yassine Elati</p>");
                 $('#go').click(this.grille.bind(this));
                 $('#go').click(function () {
                 });
@@ -24,11 +21,10 @@
 
             grille() {
                 $('#puissance4').remove();
-
                 $("body").prepend("<div id='puissance4'></div>");
                 $("body").prepend("<h6 class='ml6' id='win'></h6>");
-                $("body").prepend("<h4 class='play'><span id='player'>Joueur RED a vous !!</span></h4>");
-                $("body").prepend("<div class='result'> <div class='countRed'>0</div> <div class='countYellow'>0</div></div>");
+                $("body").prepend("<h3 class='play'><span id='player'>Joueur RED a vous !!</span></h3>");
+                $("body").prepend("<div class='result'><div class='scorered'><p> RED : <span class='countRed'>0</span></p></div> <div class='secoreyellow'><p>YELLOW : <span class='countYellow'>0</span></p></div></div>");
                 const grille = $(this.selector);
                 this.nb_x = $('#x').val();
                 this.nb_y = $('#y').val();
@@ -61,6 +57,10 @@
             }
 
             placerPions() {
+                var scoreRed =0;
+                var scoreYellow =0;
+                var red ='red';
+                var yellow ='yellow';
                 this.victoire = false;
                 const grille = $(this.selector);
                 const that = this;
@@ -107,6 +107,7 @@
                     if (winner) {
 
                         const that = this;
+
                         that.victoire = true;
                         $('#win').text('GAME OVER !! ' + clr.toUpperCase() + ' A GAGNE ... ');
                         let son1 = new Audio('GO.mp3');
@@ -114,13 +115,21 @@
                         $('.col.empty').removeClass('empty');
                         $('#restart').css('visibility','visible');
                         $('#puissance4').css('pointer-events','none');
-                        if(that.victoire===this.player){
-                            this.score1++;
-                            console.log(this.score1)
+
+
+
+
+                        if(winner=== red){
+                            scoreRed++;
+                            console.log(scoreRed);
+                            $('.countRed').text(scoreRed);
                         }
-                        else {
-                            this.score2++;
+                        else if(winner=== yellow){
+                            scoreYellow++;
+                            console.log(scoreYellow);
+                            $('.countYellow').text(scoreYellow);
                         }
+
                         return;
                     }
 
@@ -209,7 +218,8 @@
         $(document).ready(function () {
             const puissance4 = new Puissance4('#puissance4');
             $('#restart').on('click',function () {
-                $('#puissance4').empty();
+                $('#puissance4').removeClass('red');
+                $('#puissance4').removeClass('yellow');
                 $('#puissance4').css('pointer-events','');
                 $('.play').remove();
                 $('.ml6').remove();
