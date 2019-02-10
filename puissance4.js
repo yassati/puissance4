@@ -12,11 +12,18 @@
                 $("body").append("<div id=\"back\"></div>");
                 $("body").append("<div id=\"front\"></div>");
                 $("body").append("<button id='restart' style='visibility: hidden'>replay</button>");
+                $("body").append("<button type='button' id='mode'><a class='reg' href='https://www.regles-de-jeux.com/regle-du-puissance-4/' target=\"_blank\">regeles de jeu</a></button>");
                 $("body").append("<br><p class='yassine'>Copyright © 2019 Yassine Elati</p>");
                 $('#go').click(this.grille.bind(this));
+                document.onkeydown = function replay (e) {
+                    var key = e.keyCode;
+                    if(key===32){
+                        this.grille.bind(this)
+                    }
+
+                };
                 $('#go').click(function () {
                 });
-
             }
 
             grille() {
@@ -45,6 +52,7 @@
                     this.placerPions();
                     this.victoire = false;
                     $('.btn').css('visibility','hidden');
+                    $('#mode').css('visibility','visible');
                     $('header').remove()
                 }
                 else {
@@ -105,9 +113,7 @@
                     );
 
                     if (winner) {
-
                         const that = this;
-
                         that.victoire = true;
                         $('#win').text('GAME OVER !! ' + clr.toUpperCase() + ' A GAGNE ... ');
                         let son1 = new Audio('GO.mp3');
@@ -115,10 +121,6 @@
                         $('.col.empty').removeClass('empty');
                         $('#restart').css('visibility','visible');
                         $('#puissance4').css('pointer-events','none');
-
-
-
-
                         if(winner=== red){
                             scoreRed++;
                             console.log(scoreRed);
@@ -129,7 +131,6 @@
                             console.log(scoreYellow);
                             $('.countYellow').text(scoreYellow);
                         }
-
                         return;
                     }
 
@@ -214,7 +215,6 @@
                 return verti() || hori() || diago1() || diago2();
             }
         }
-
         $(document).ready(function () {
             const puissance4 = new Puissance4('#puissance4');
             $('#restart').on('click',function () {
@@ -227,7 +227,21 @@
                 puissance4.grille();
                 $('#restart').css('visibility','hidden');
 
-            })
+            });
+            document.onkeydown = function replay (e) {
+                var key = e.keyCode;
+                if (key === 32) {
+                    $('#puissance4').removeClass('red');
+                    $('#puissance4').removeClass('yellow');
+                    $('#puissance4').css('pointer-events', '');
+                    $('.play').remove();
+                    $('.ml6').remove();
+                    $('.result').remove();
+                    puissance4.grille();
+                    $('#restart').css('visibility', 'hidden');
+                }
+
+            };
         });
     }
 })(jQuery);
